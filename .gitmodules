@@ -1,0 +1,3 @@
+[submodule "aruco_markers_msgs"]
+	path = aruco_markers_msgs
+	url = https://github.com/SpaceMaster85/aruco_markers_msgs.git
