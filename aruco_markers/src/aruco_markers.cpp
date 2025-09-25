@@ -78,12 +78,10 @@ void ArucoMarkersNode::process_camera_info(const sensor_msgs::msg::CameraInfo & 
       this->get_logger(), "Camera Info:\n"
       "\tWidth: %d\n"
       "\tHeight: %d\n"
-      "\tK (intrinsic matrix): [%f, %f, %f, %f, %f, %f, %f, %f, %f]\n"
-      "\tD (distortion coefficients): [%f, %f, %f, %f, %f]",
+      "\tK (intrinsic matrix): [%f, %f, %f, %f, %f, %f, %f, %f, %f]",
       msg.width,
       msg.height,
-      msg.k[0], msg.k[1], msg.k[2], msg.k[3], msg.k[4], msg.k[5], msg.k[6], msg.k[7], msg.k[8],
-      msg.d[0], msg.d[1], msg.d[2], msg.d[3], msg.d[4]);
+      msg.k[0], msg.k[1], msg.k[2], msg.k[3], msg.k[4], msg.k[5], msg.k[6], msg.k[7], msg.k[8]);
     received_camera_info_ = true;
   }
 }
