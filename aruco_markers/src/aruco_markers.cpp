@@ -49,7 +49,8 @@ void ArucoMarkersNode::initialize()
 
   // Set up ArUco marker detector
   aruco_dict_ = cv::aruco::getPredefinedDictionary(utils::dictNameToEnum(dictionary_));
-  aruco_parameters_ = cv::aruco::DetectorParameters::create();
+  aruco_parameters_ = cv::aruco::DetectorParameters();
+  aruco_detector_ = cv::aruco::ArucoDetector(aruco_dict_, aruco_parameters_);
 
   RCLCPP_INFO(this->get_logger(), "Waiting for camera info.");
   sensor_msgs::msg::CameraInfo camera_info;
@@ -120,19 +121,30 @@ void ArucoMarkersNode::image_callback(const sensor_msgs::msg::Image::ConstShared
     // Detect ArUco markers
     std::vector<int> marker_ids;
     std::vector<std::vector<cv::Point2f>> marker_corners, rejected_candidates;
-    cv::Mat dist_coeffs = cv::Mat::zeros(4, 1, CV_64F);
-    cv::aruco::detectMarkers(
-      image, aruco_dict_, marker_corners, marker_ids, aruco_parameters_,
-      rejected_candidates, camera_matrix_, camera_distortion_);
+    aruco_detector_.detectMarkers(image, marker_corners, marker_ids, rejected_candidates);
 
     if (!marker_ids.empty()) {
       // Estimate the pose of the ArUco markers (using solvePnP)
       std::vector<cv::Vec3d> tvecs;
       std::vector<cv::Vec3d> rvecs;
 
-      cv::aruco::estimatePoseSingleMarkers(
-        marker_corners, marker_size_, camera_matrix_,
-        camera_distortion_, rvecs, tvecs);
+      // Define marker 3D object points (corners in marker local frame)
+      const float half_size = static_cast<float>(marker_size_) / 2.0f;
+      std::vector<cv::Point3f> obj_points = {
+        {-half_size, half_size, 0.0f},
+        {half_size, half_size, 0.0f},
+        {half_size, -half_size, 0.0f},
+        {-half_size, -half_size, 0.0f}
+      };
+
+      for (size_t i = 0; i < marker_corners.size(); ++i) {
+        cv::Vec3d rvec, tvec;
+        cv::solvePnP(
+          obj_points, marker_corners[i], camera_matrix_, camera_distortion_, rvec, tvec,
+          false, cv::SOLVEPNP_IPPE_SQUARE);
+        rvecs.push_back(rvec);
+        tvecs.push_back(tvec);
+      }
 
       if (tvecs.empty() || rvecs.empty()) {
         RCLCPP_WARN(this->get_logger(), "Pose estimation failed for marker.");
@@ -200,9 +212,9 @@ void ArucoMarkersNode::image_callback(const sensor_msgs::msg::Image::ConstShared
         marker_array.markers.push_back(marker);
 
         // Draw 3D axis on the marker in the image
-        cv::aruco::drawAxis(
+        cv::drawFrameAxes(
           image, camera_matrix_, camera_distortion_, rvec, tvec,
-          marker_size_ * 0.7f);
+          static_cast<float>(marker_size_) * 0.7f);
         draw3dAxis(image, tvec, rvec, 1);
       }
 

@@ -69,8 +69,9 @@ private:
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
   // ArUco marker detector variables
-  cv::Ptr<cv::aruco::Dictionary> aruco_dict_;
-  cv::Ptr<cv::aruco::DetectorParameters> aruco_parameters_;
+  cv::aruco::Dictionary aruco_dict_;
+  cv::aruco::DetectorParameters aruco_parameters_;
+  cv::aruco::ArucoDetector aruco_detector_;
 
   cv::Mat camera_matrix_;
   cv::Mat camera_distortion_;
