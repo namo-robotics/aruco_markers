@@ -50,7 +50,7 @@ void ArucoMarkersNode::initialize()
 
   // Set up ArUco marker detector
   aruco_dict_ = cv::aruco::getPredefinedDictionary(utils::dictNameToEnum(dictionary_));
-  aruco_parameters_ = cv::aruco::DetectorParameters::create();
+  aruco_parameters_ = cv::aruco::DetectorParameters();
 
   RCLCPP_INFO(this->get_logger(), "Waiting for camera info.");
   sensor_msgs::msg::CameraInfo camera_info;
@@ -126,9 +126,9 @@ void ArucoMarkersNode::image_callback(const sensor_msgs::msg::Image::ConstShared
 
     cv::Mat undistortedImage;
     cv::undistort(image, undistortedImage, camera_matrix_, camera_distortion_);
-    cv::aruco::detectMarkers(
-        undistortedImage, aruco_dict_, marker_corners, marker_ids,
-        aruco_parameters_, rejected_candidates);
+    cv::aruco::ArucoDetector detector(aruco_dict_, aruco_parameters_);
+    detector.detectMarkers(
+        undistortedImage, marker_corners, marker_ids, rejected_candidates);
 
     if (!marker_ids.empty()) {
         // Estimate the pose of the ArUco markers (using solvePnP)
