@@ -10,9 +10,9 @@ bool isVec3dZero(const cv::Vec3d & vec)
   return vec[0] == 0.0 && vec[1] == 0.0 && vec[2] == 0.0;
 }
 
-cv::aruco::PREDEFINED_DICTIONARY_NAME dictNameToEnum(const std::string & dict_name)
+cv::aruco::PredefinedDictionaryType dictNameToEnum(const std::string & dict_name)
 {
-  std::unordered_map<std::string, cv::aruco::PREDEFINED_DICTIONARY_NAME> dict_name_map = {
+  std::unordered_map<std::string, cv::aruco::PredefinedDictionaryType> dict_name_map = {
     {"DICT_4X4_50", cv::aruco::DICT_4X4_50},
     {"DICT_4X4_100", cv::aruco::DICT_4X4_100},
     {"DICT_4X4_250", cv::aruco::DICT_4X4_250},
