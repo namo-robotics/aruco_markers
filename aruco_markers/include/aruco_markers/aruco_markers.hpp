@@ -51,7 +51,7 @@ private:
   void logCvMat(const cv::Mat & mat, const std::string & name);
   void logVec3d(const cv::Vec3d & vec, const std::string & name);
   void draw3dAxis(cv::Mat & Image, const cv::Vec3d & tvec, const cv::Vec3d & rvec, int lineSize);
-  cv::aruco::PREDEFINED_DICTIONARY_NAME dictNameToEnum(const std::string & dict_name);
+  cv::aruco::PredefinedDictionaryType dictNameToEnum(const std::string & dict_name);
 
   // ROS 2 Publisher for ArUco marker info
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr marker_info_publisher_;
@@ -69,8 +69,8 @@ private:
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
   // ArUco marker detector variables
-  cv::Ptr<cv::aruco::Dictionary> aruco_dict_;
-  cv::Ptr<cv::aruco::DetectorParameters> aruco_parameters_;
+  cv::aruco::Dictionary aruco_dict_;
+  cv::aruco::DetectorParameters aruco_parameters_;
 
   cv::Mat camera_matrix_;
   cv::Mat camera_distortion_;
